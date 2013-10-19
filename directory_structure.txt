@@ -1,0 +1,29 @@
+rewave/
+|-- client
+|   |-- android
+|   |   `-- readme
+|   `-- ios
+|       `-- readme
+|-- directory_structure.txt
+`-- server
+    |-- c
+    |   `-- readme
+    |-- javascript
+    |   |-- logs.json
+    |   |-- node_modules
+    |   |   `-- json-stream
+    |   |       |-- lib
+    |   |       |   `-- json-stream.js
+    |   |       |-- LICENSE
+    |   |       |-- package.json
+    |   |       |-- README.md
+    |   |       `-- test
+    |   |           |-- json-stream-test.js
+    |   |           `-- pipe-test.js
+    |   `-- server.js
+    |-- python
+    |   |-- readme
+    |   `-- server.py
+    `-- references
+
+11 directories, 15 files
