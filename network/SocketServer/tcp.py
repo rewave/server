@@ -8,7 +8,7 @@ class ConnectionHandler(SocketServer.BaseRequestHandler):
 		print self.data
 
 if __name__== "__main__":
-	host, port = "localhost", 9999
+	host, port = "localhost", 10552
 	server = SocketServer.TCPServer((host, port), ConnectionHandler)
 
 	try:
