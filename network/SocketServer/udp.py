@@ -4,7 +4,8 @@ import SocketServer
 
 class ConnectionHandler(SocketServer.BaseRequestHandler):
 	def handle(self):
-		request = self.request
+		print self.request
+
 
 if __name__== "__main__":
 	host, port = "localhost", 9999
