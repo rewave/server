@@ -11,8 +11,13 @@ Ref
 
 Clients that may be used for testing the server : 
 
-####Android : [iSeismometer][1], [Sensor Node][2]
-####iOS :  [iSeismometer][3], [Sensor Data Streamer][4]
+Android
+-[iSeismometer][1]
+-[Sensor Node][2]
+
+iOS
+-[iSeismometer][3]
+-[Sensor Data Streamer][4]
 
 
 [1]:https://play.google.com/store/apps/details?id=com.objectgraph.iSeismometer&hl=en
