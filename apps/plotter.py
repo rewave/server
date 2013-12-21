@@ -46,28 +46,31 @@ class AccelrationVector(object):
 class TimeKeeper(object):
 	"""Data structure to store and manipulate time. Time is added in steps"""
 	
-	def __init__(self, max_points=20, step=0.03):
+	def __init__(self, max_points=20):
 		super(TimeKeeper, self).__init__()
 		self.t = []
-		self.instant = 0 #current instance of time
 		self.max_points = max_points
-		self.step = step
 
 	def _fix_length(self):
 		self.t = self.t[-self.max_points:]
 
-	def tick(self):
-		self.t.append(self.instant)
-		self.instant += self.step	
+	def tick(self, time):
+		self.t.append(time)	
 		self._fix_length()
 		return self.t
 
 	def get(self):
 		return self.t
 
+	def get_t_range(self):
+		try:
+			return (self.t[0]-0.06, self.t[-1]+0.09)
+		except IndexError as e:
+			return (-1,1)
 
-A = AccelrationVector(max_modulus=20)
-t = TimeKeeper(max_points=20, step=0.4)
+
+A = AccelrationVector(max_modulus=5)
+t = TimeKeeper(max_points=5)
 
 figure = plt.figure(figsize=(16,4))
 axes = {
@@ -81,30 +84,26 @@ for acc, axis in axes.iteritems():
 	axis.axhline(0)
 	axis.set_title(acc)
 	axis.set_ylim([-2,2])
-	axis.set_xlim([t.instant-t.step*3, t.instant+t.step*2])
+	axis.set_xlim(t.get_t_range())
 plt.ion()
 plt.show()
 
 @gramme.server(3030)
 def plotter(data):
 	global A, t
-	data = data.split(',')[2:]
+	data = data.split(',')[1:]
 
-	A.append('x', float(data[0]) )
-	A.append('y', float(data[1]) )
-	A.append('z' ,float(data[2]) )
-	
-	t.tick()
+	t.tick(float(data[0]))
+	A.append('x', float(data[1]) )
+	A.append('y', float(data[2]) )
+	A.append('z' ,float(data[3]) )
 
-	log.info("T : %s, Ax : %s"% ( t.get(), len(A['x']) ) )
-	
 	axes["Ax"].plot(t.get(), A['x'], color="red", linewidth=1.0, linestyle="-")
 	axes["Ay"].plot(t.get(), A['y'], color="green", linewidth=1.0, linestyle="-")
 	axes["Az"].plot(t.get(), A['z'], color="blue", linewidth=1.0, linestyle="-")
 
 	for acc, axis in axes.iteritems():
-		axis.set_xlim([t.instant-t.step*3, t.instant+t.step*2])
-
+		axis.set_xlim(t.get_t_range())
 	try:
 		plt.draw()
 	except KeyboardInterrupt:
