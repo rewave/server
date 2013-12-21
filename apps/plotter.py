@@ -7,16 +7,73 @@ Plot sensor data & events using matplotlib.
 import gramme
 import matplotlib.pyplot as plt
 
-Ax, Ay, Az, t_list = [],[],[],[]
-t = 0
-t_step = 0.03
+from logbook import Logger
+
+log = Logger('apps: plotter', level=50)
+
+class AccelrationVector(object):
+	"""Data strucuture to hold and manipulate accelration vector"""
+	
+	def __init__(self, max_modulus=20):
+		#max_modulus : max data points the array should hold for each direction
+		super(AccelrationVector, self).__init__()
+		self.a = {'x':[], 'y':[], 'z':[]}
+		self.max_modulus = max_modulus
+
+	def __getitem__(self, direction):
+		try:
+			return self.a[direction]
+		except KeyError as e:
+			log.error("Direction %s is not defined"%direction)
+			return []
+
+	def _fix_length(self, direction):
+		try:
+			self.a[direction] = self.a[direction][-self.max_modulus:]
+		except KeyError as e:
+			log.error("Direction %s is not defined"%direction)
+			return []	
+	
+	def append(self, direction, value):
+		try:
+			self.a[direction].append(value)
+			self._fix_length(direction)
+			return self.a[direction]
+		except KeyError as e:
+			log.error("Direction %s is not defined"%direction)
+			return []
+
+class TimeKeeper(object):
+	"""Data structure to store and manipulate time. Time is added in steps"""
+	
+	def __init__(self, max_points=20, step=0.03):
+		super(TimeKeeper, self).__init__()
+		self.t = []
+		self.instant = 0 #current instance of time
+		self.max_points = max_points
+		self.step = step
+
+	def _fix_length(self):
+		self.t = self.t[-self.max_points:]
+
+	def tick(self):
+		self.t.append(self.instant)
+		self.instant += self.step	
+		self._fix_length()
+		return self.t
+
+	def get(self):
+		return self.t
 
 
-figure = plt.figure(figsize=(12,7.41))
+A = AccelrationVector(max_modulus=20)
+t = TimeKeeper(max_points=20, step=0.4)
+
+figure = plt.figure(figsize=(16,4))
 axes = {
-	"Ax":figure.add_subplot(231),
-	"Ay":figure.add_subplot(232),
-	"Az":figure.add_subplot(233)
+	"Ax":figure.add_subplot(131),
+	"Ay":figure.add_subplot(132),
+	"Az":figure.add_subplot(133)
 }
 
 for acc, axis in axes.iteritems():
@@ -24,26 +81,31 @@ for acc, axis in axes.iteritems():
 	axis.axhline(0)
 	axis.set_title(acc)
 	axis.set_ylim([-2,2])
+	axis.set_xlim([t.instant-t.step*3, t.instant+t.step*2])
 plt.ion()
 plt.show()
 
 @gramme.server(3030)
 def plotter(data):
-	global t, t_step
+	global A, t
 	data = data.split(',')[2:]
-	Ax.append(float(data[0]))
-	Ay.append(float(data[1]))
-	Az.append(float(data[2]))
-	t_list.append(t)
-	t+=t_step
 
-	axes["Ax"].plot(t_list, Ax, color="red", linewidth=1.0, linestyle="-")
-	axes["Ay"].plot(t_list, Ay, color="green", linewidth=1.0, linestyle="-")
-	axes["Az"].plot(t_list, Az, color="blue", linewidth=1.0, linestyle="-")
+	A.append('x', float(data[0]) )
+	A.append('y', float(data[1]) )
+	A.append('z' ,float(data[2]) )
+	
+	t.tick()
 
+	log.info("T : %s, Ax : %s"% ( t.get(), len(A['x']) ) )
+	
+	axes["Ax"].plot(t.get(), A['x'], color="red", linewidth=1.0, linestyle="-")
+	axes["Ay"].plot(t.get(), A['y'], color="green", linewidth=1.0, linestyle="-")
+	axes["Az"].plot(t.get(), A['z'], color="blue", linewidth=1.0, linestyle="-")
+
+	for acc, axis in axes.iteritems():
+		axis.set_xlim([t.instant-t.step*3, t.instant+t.step*2])
 
 	try:
 		plt.draw()
 	except KeyboardInterrupt:
-		print t_list
 		raise #let gramme handle this
