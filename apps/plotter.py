@@ -43,6 +43,7 @@ class AccelrationVector(object):
 			log.error("Direction %s is not defined"%direction)
 			return []
 
+
 class TimeKeeper(object):
 	"""Data structure to store and manipulate time. Time is added in steps"""
 	
@@ -69,14 +70,30 @@ class TimeKeeper(object):
 			return (-1,1)
 
 
+class Plot(object):
+	"""Hold the real plots"""
+	def __init__(self, figsize=(16,12)):
+		super(Plot, self).__init__()
+		self.figsize = figsize
+		self.figure = plt.figure(figsize=self.figsize)
+		self.axes = {
+			"Ax":self.figure.add_subplot(311),
+			"Ay":self.figure.add_subplot(312),
+			"Az":self.figure.add_subplot(313)
+		}
+
+	
+
+		
+
 A = AccelrationVector(max_modulus=5)
 t = TimeKeeper(max_points=5)
 
-figure = plt.figure(figsize=(16,4))
+figure = plt.figure(figsize=(16,8))
 axes = {
-	"Ax":figure.add_subplot(131),
-	"Ay":figure.add_subplot(132),
-	"Az":figure.add_subplot(133)
+	"Ax":figure.add_subplot(311),
+	"Ay":figure.add_subplot(312),
+	"Az":figure.add_subplot(313)
 }
 
 for acc, axis in axes.iteritems():
