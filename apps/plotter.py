@@ -14,7 +14,7 @@ log = Logger('apps: plotter', level=50)
 class AccelrationVector(object):
 	"""Data strucuture to hold and manipulate accelration vector"""
 	
-	def __init__(self, max_modulus=20):
+	def __init__(self, max_modulus=100):
 		#max_modulus : max data points the array should hold for each direction
 		super(AccelrationVector, self).__init__()
 		self.a = {'x':[], 'y':[], 'z':[]}
@@ -29,12 +29,11 @@ class AccelrationVector(object):
 
 	def _fix_length(self, direction):
 		try:
-			self.a[direction] = self.a[direction][-self.max_modulus:]
+			if len(self.a[direction]) > self.max_modulus : self.a[direction] = []  
 		except KeyError as e:
 			log.error('Direction %s is not defined'%direction)
-			return []	
 	
-	def append(self, direction, value):
+	def _add_single(self, direction, value):
 		try:
 			self.a[direction].append(value)
 			self._fix_length(direction)
@@ -43,32 +42,34 @@ class AccelrationVector(object):
 			log.error('Direction %s is not defined'%direction)
 			return []
 
+	def update(self, A):
+		#A = (x,y,z)
+		directions = ['x','y','z']
+		try:
+			for direction in directions:
+				self._add_single(direction, A[direction])
+		except KeyError as e:
+			log.error('Direction %s is not defined'%direction)
+
 
 class TimeKeeper(object):
 	"""Data structure to store and manipulate time. Time is added in steps"""
 	
-	def __init__(self, max_points=20):
+	def __init__(self, max_points=100):
 		super(TimeKeeper, self).__init__()
 		self.t = []
 		self.max_points = max_points
+		self.t0 = 0.0
 
 	def _fix_length(self):
-		self.t = self.t[-self.max_points:]
+		if len(self.t) >= self.max_points : self.t = []
 
 	def tick(self, time):
-		self.t.append(time)	
+		self.t.append(time)
 		self._fix_length()
-		return self.t
 
 	def get(self):
 		return self.t
-
-	def get_t_range(self):
-		try:
-			return (self.t[0]-0.06, self.t[-1]+0.09)
-		except IndexError as e:
-			return (-1,1)
-
 
 class Plot(object):
 	"""Hold the real plots"""
@@ -87,31 +88,41 @@ class Plot(object):
 			axis.axhline(0)
 			axis.set_title(acc)
 			axis.set_ylim([-2,2])
-			axis.set_xlim(1,100)
 
 		plt.ion()
 		plt.tight_layout()
 		plt.show()
+		self.t = 0
 
 	def update(self, A, t):
 		#A, t are AccelrationVector and TimeKeeper objects
-		for direction, axis in self.axes.iteritems():
-			axis.scatter(t.get(), A[direction])
-
-	
-
+		log.info("AccelrationVector in X direction is %s"%A['x'])
+		log.info("Time list is : %s"%t.get())
 		
+		t_list = t.get()
+		if self.t != t_list[0] : update_axis = True 
+		else : update_axis = False
 
-A = AccelrationVector(max_modulus=5)
-t = TimeKeeper(max_points=5)
+		for direction, axis in self.axes.iteritems():
+			if update_axis : axis.set_xlim([t_list[0], t_list[0]+0.01])
+			axis.plot(t_list, A[direction])
+		plt.draw()
+
+A = AccelrationVector(max_modulus=100)
+t = TimeKeeper(max_points=100)
 p = Plot()
 
 @gramme.server(3030)
 def plotter(data):
 	global A, t, p
-	(x,y,z) = data.split(',')[2:]
-	p.update()
 	try:
-		plt.draw()
+		data = data[:-1].split(',')[1:]
+		log.info("Data received : %s"%str(data))
+		time = float(data[0])
+		acc_vector = {'x':float(data[1]), 'y':float(data[2]), 'z':float(data[3])}
+
+		A.update(acc_vector)
+		t.tick(time)
+		p.update(A,t)
 	except KeyboardInterrupt:
 		raise #let gramme handle this
