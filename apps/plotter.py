@@ -24,14 +24,14 @@ class AccelrationVector(object):
 		try:
 			return self.a[direction]
 		except KeyError as e:
-			log.error("Direction %s is not defined"%direction)
+			log.error('Direction %s is not defined'%direction)
 			return []
 
 	def _fix_length(self, direction):
 		try:
 			self.a[direction] = self.a[direction][-self.max_modulus:]
 		except KeyError as e:
-			log.error("Direction %s is not defined"%direction)
+			log.error('Direction %s is not defined'%direction)
 			return []	
 	
 	def append(self, direction, value):
@@ -40,7 +40,7 @@ class AccelrationVector(object):
 			self._fix_length(direction)
 			return self.a[direction]
 		except KeyError as e:
-			log.error("Direction %s is not defined"%direction)
+			log.error('Direction %s is not defined'%direction)
 			return []
 
 
@@ -77,10 +77,26 @@ class Plot(object):
 		self.figsize = figsize
 		self.figure = plt.figure(figsize=self.figsize)
 		self.axes = {
-			"Ax":self.figure.add_subplot(311),
-			"Ay":self.figure.add_subplot(312),
-			"Az":self.figure.add_subplot(313)
+			'x':self.figure.add_subplot(311),
+			'y':self.figure.add_subplot(312),
+			'z':self.figure.add_subplot(313)
 		}
+
+		#draw the first version
+		for acc, axis in self.axes.iteritems():
+			axis.axhline(0)
+			axis.set_title(acc)
+			axis.set_ylim([-2,2])
+			axis.set_xlim(1,100)
+
+		plt.ion()
+		plt.tight_layout()
+		plt.show()
+
+	def update(self, A, t):
+		#A, t are AccelrationVector and TimeKeeper objects
+		for direction, axis in self.axes.iteritems():
+			axis.scatter(t.get(), A[direction])
 
 	
 
@@ -88,39 +104,13 @@ class Plot(object):
 
 A = AccelrationVector(max_modulus=5)
 t = TimeKeeper(max_points=5)
-
-figure = plt.figure(figsize=(16,8))
-axes = {
-	"Ax":figure.add_subplot(311),
-	"Ay":figure.add_subplot(312),
-	"Az":figure.add_subplot(313)
-}
-
-for acc, axis in axes.iteritems():
-	axis.grid(True)
-	axis.axhline(0)
-	axis.set_title(acc)
-	axis.set_ylim([-2,2])
-	axis.set_xlim(t.get_t_range())
-plt.ion()
-plt.show()
+p = Plot()
 
 @gramme.server(3030)
 def plotter(data):
-	global A, t
-	data = data.split(',')[1:]
-
-	t.tick(float(data[0]))
-	A.append('x', float(data[1]) )
-	A.append('y', float(data[2]) )
-	A.append('z' ,float(data[3]) )
-
-	axes["Ax"].plot(t.get(), A['x'], color="red", linewidth=1.0, linestyle="-")
-	axes["Ay"].plot(t.get(), A['y'], color="green", linewidth=1.0, linestyle="-")
-	axes["Az"].plot(t.get(), A['z'], color="blue", linewidth=1.0, linestyle="-")
-
-	for acc, axis in axes.iteritems():
-		axis.set_xlim(t.get_t_range())
+	global A, t, p
+	(x,y,z) = data.split(',')[2:]
+	p.update()
 	try:
 		plt.draw()
 	except KeyboardInterrupt:
