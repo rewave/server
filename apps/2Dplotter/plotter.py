@@ -45,7 +45,10 @@ class Plot(object):
 
 	def update_axes(self):
 		for direction, axis in self.axes.iteritems():
-			axis.set_xlim([self.T.points[-1], self.T.points[-1]+self.T.scaling*self.T.max_points])
+			change = self.T.max_points/self.T.scaling - 1.0/self.T.scaling
+			xmin,xmax = axis.get_xlim()
+
+			axis.set_xlim(xmin+change, xmax+change)
 				
 	def update(self, ax, ay, az):
 		self.A.update([ax, ay, az]) 
@@ -54,11 +57,11 @@ class Plot(object):
 		for direction, axis in self.axes.iteritems():
 			if self.T.points[-1] >= self.max_points/self.scaling :
 				axis.set_axis_bgcolor('white')
-			axis.plot(self.T.points , self.A[direction], alpha=0.5, linewidth=0.15)
+			axis.plot(self.T.points , self.A[direction], alpha=0.5, linewidth=0.05, color='red')
 		plt.draw()
 
 if __name__ == '__main__':
-	p = Plot(max_points=200, scaling=5)	
+	p = Plot(max_points=100, scaling=2)	
 	data_points = 0
 	@gramme.server(3030)
 	def plotter(data):
@@ -66,7 +69,7 @@ if __name__ == '__main__':
 		try:
 			data = data[:-1].split(',')[2:]
 			data_points += 1
-			if data_points > p.max_points*p.scaling : 
+			if data_points > p.max_points : 
 				p.update_axes()
 				data_points = 0
 			log.info("Data received : %s"%str(data))
