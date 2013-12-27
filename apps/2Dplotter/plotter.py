@@ -58,7 +58,7 @@ class Plot(object):
 		plt.draw()
 
 if __name__ == '__main__':
-	p = Plot(max_points=40, scaling=1)	
+	p = Plot(max_points=200, scaling=5)	
 	data_points = 0
 	@gramme.server(3030)
 	def plotter(data):
