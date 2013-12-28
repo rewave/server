@@ -15,7 +15,7 @@ log = Logger('apps: plotter', level=50)
 
 class Plot(object):
 	"""Hold the real plots"""
-	def __init__(self, figsize=(16,12), max_points=20, scaling=4):
+	def __init__(self, figsize=(16,12), max_points=20, scaling=4, y_min=-2, y_max=2):
 		super(Plot, self).__init__()
 		self.figsize = figsize
 		self.figure = plt.figure(figsize=self.figsize, facecolor='#ffffff')
@@ -35,7 +35,7 @@ class Plot(object):
 		#draw the first version
 		for acc, axis in self.axes.iteritems():
 			axis.set_title(acc)
-			axis.set_ylim([-2,2])
+			axis.set_ylim([y_min, y_max])
 			axis.set_xlim([1.0/self.T.scaling, self.T.max_points/self.T.scaling])
 			#axis.axis("off")
 
@@ -61,9 +61,9 @@ class Plot(object):
 		plt.draw()
 
 if __name__ == '__main__':
-	p = Plot(max_points=100, scaling=2)	
+	p = Plot(max_points=80, scaling=2, y_min=-4, y_max=4)	
 	data_points = 0
-	@gramme.server(3030)
+	@gramme.server(3030, poll_interval=1/73)
 	def plotter(data):
 		global p, data_points
 		try:
