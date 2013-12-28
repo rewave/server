@@ -7,4 +7,5 @@ class DecimalFilter(BaseFilter):
 		self.precision = precision
 	
 	def _apply(self, p):
-		return round(p, self.precision)
+		p = round(p, self.precision)
+		return p if p**2> 0.001 else 0

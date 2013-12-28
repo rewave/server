@@ -9,9 +9,9 @@ from pymouse import PyMouse
 from logbook import Logger
 from decimalfilter import DecimalFilter
 
-log 			= Logger('apps: plotter', level=0)
+log 			= Logger('apps: plotter', level=50)
 mouse 			= PyMouse()
-time_interval 	= 1/73 #set it to 1/f where f is frequency of stream
+time_interval 	= 1.0/73 #set it to 1/f where f is frequency of stream
 time_squared 	= time_interval**2
 
 DF 				= DecimalFilter(0,0,precision=2)
@@ -28,6 +28,6 @@ def mouse(data):
 		if ax or ay:
 			[sx2, sy2] = mouse.position()
 			log.info("Mouse moved from (%s, %s) to (%s, %s)"%(sx,sy,sx2,sy2))
-			mouse.move(sx+0.5*ax*amplification*time_squared, sy+0.5*ay*amplification*time_squared)
+			mouse.move(sx+0.5*ax*amplification, sy+0.5*ay*amplification)
 	except KeyboardInterrupt:
 		raise #let gramme handle this
