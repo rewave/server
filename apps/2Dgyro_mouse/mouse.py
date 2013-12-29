@@ -9,10 +9,9 @@ from pymouse import PyMouse
 from logbook import Logger
 from decimalfilter import DecimalFilter
 
-log 			= Logger('apps: plotter', level=50)
+log 			= Logger('apps: plotter', level=00)
 mouse 			= PyMouse()
-time_interval 	= 1.0/73 #set it to 1/f where f is frequency of stream
-time_squared 	= time_interval**2
+time_interval 	= 0
 
 DF 				= DecimalFilter(0,0,precision=2)
 amplification 	= 100
