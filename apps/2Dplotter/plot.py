@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 import matplotlib.pyplot as plt
+from accelrationvector import AccelrationVector
+from timekeeper import TimeKeeper
 
 class Plot(object):
 	"""Hold the real plots"""

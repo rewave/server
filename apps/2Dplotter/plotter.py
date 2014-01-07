@@ -4,9 +4,7 @@
 Plot sensor data & events using matplotlib. 
 """
 
-import gramme
-from accelrationvector import AccelrationVector
-from timekeeper import TimeKeeper
+import gramme, struct
 from plot import Plot
 
 from logbook import Logger
@@ -14,13 +12,13 @@ from logbook import Logger
 log = Logger('apps: plotter', level=50)
 
 if __name__ == '__main__':
-	p = Plot(max_points=80, scaling=2, y_min=-4, y_max=4)	
+	p = Plot(max_points=40, scaling=2, y_min=-4, y_max=4)	
 	data_points = 0
 	@gramme.server(3030, poll_interval=1/73)
 	def plotter(data):
 		global p, data_points
 		try:
-			data = data[:-1].split(',')[2:]
+			data = struct.unpack('ffffff', data[4:28])#data.split(',')[2:4] #x,y accelration
 			data_points += 1
 			if data_points > p.max_points : 
 				p.update_axes()
