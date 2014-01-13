@@ -12,9 +12,9 @@ from logbook import Logger
 log = Logger('apps: plotter', level=50)
 
 if __name__ == '__main__':
-	p = Plot(max_points=100, scaling=1, y_min=-4, y_max=4)	
+	p = Plot(max_points=200, scaling=1, y_min=-4, y_max=4)	
 	data_points = 0
-	@gramme.server(3030, poll_interval=1/73)
+	@gramme.server(3030)
 	def plotter(data):
 		global p, data_points
 		try:
