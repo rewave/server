@@ -25,9 +25,9 @@ if __name__ == '__main__':
 			if length >= 2.5:
 				log.info("Data received is %s"%str(data))
 				if float(data[0])>0:
-					motion_log['right'] +=data[0]
+					motion_log['right']+=data[0]
 				else:
-					motion_log['left'] +=data[1]
+					motion_log['left']+=data[1]
 			else:
 				if motion_log['left'] > motion_log['right']:
 					log.info("Accelration towards left")
