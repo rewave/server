@@ -7,7 +7,7 @@ Determine vector direction left or right
 import gramme, datetime, time
 from os import rename
 from logbook import Logger
-import lib.data_formatter.iPhone as iPhone
+import library.data_formatter.iPhone as iPhone
 
 base_time = time.time()
 log = Logger('log_data.py', level=0)
