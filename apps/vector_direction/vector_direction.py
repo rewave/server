@@ -10,33 +10,32 @@ from pykeyboard import PyKeyboard
 from logbook import Logger
 
 k = PyKeyboard()
-movement = 0
-motion_log = {'left':0, 'right':0}
+motion_log = []
 
-log = Logger('apps: vector_direction', level=0)
+log = Logger('apps > vector_direction', level=0)
 
 if __name__ == '__main__':
 	@gramme.server(3030)
 	def plotter(data):
-		global k, movement
+		global k, motion_log
 		try:
 			data = struct.unpack('ffffff', data[4:28])#ax,ay,az,wx,wy,wz
 			length = (float(data[0])**2 + float(data[1])**2)**0.5
-			if length >= 2.5:
-				log.info("Data received is %s"%str(data))
-				if float(data[0])>0:
-					motion_log['right'] +=data[0]
-				else:
-					motion_log['left'] +=data[1]
+			if length >= 1.5:
+				#log.info("Data received is %s"%str(data))
+				motion_log.append([data[0], data[1]])
 			else:
-				if motion_log['left'] > motion_log['right']:
-					log.info("Accelration towards left")
-					k.tap_key(k.right_key)	
-				if motion_log['left'] < motion_log['right']:
-					log.info("Accelration towards right")
-					#k.tap_key(k.right_key)	
-					
-				motion_log['left'] = motion_log['right'] = 0
+				try:
+					if motion_log[0][0] > 0 and motion_log[-1][0] < 0:#maybe left
+						log.info("Left wave encountered")
+						k.tap_key(k.right_key)
+					if motion_log[0][0] < 0 and motion_log[-1][0] > 0:
+						log.info("Right wave encountered")
+						k.tap_key(k.left_key)
+					motion_log = [] #flush
+				except IndexError as e:
+					#no elements added to motion log
+					pass 
 
 		except KeyboardInterrupt:
 			raise #let gramme handle this

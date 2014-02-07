@@ -47,5 +47,5 @@ class Plot(object):
 		for direction, axis in self.axes.iteritems():
 			if self.T.points[-1] >= self.max_points/self.scaling :
 				axis.set_axis_bgcolor('white')
-			axis.scatter(self.T.points , self.A[direction], alpha=0.5, linewidth=0.05, color='red')
+			axis.plot(self.T.points , self.A[direction], alpha=0.5, linewidth=0.05, color='red')
 		plt.draw()
