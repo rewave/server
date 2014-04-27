@@ -1,37 +1,34 @@
 #!/usr/bin/python
 
-
 import time, csv
 
 from bluetooth import *
-from pykeyboard import PyKeyboard
 from logbook import Logger
+from pattern import Pattern
 
 log = Logger('main.py', level=0)
 
-server_sock=BluetoothSocket( RFCOMM )
+test_case = Pattern(stream=True) #stream of incoming data
+templates = [Pattern("left_wave", "Left")]#, Pattern("right_wave", "Right"), Pattern("flick_up", "Up")]
+
+
+server_sock=BluetoothSocket(RFCOMM)
 server_sock.bind(("",PORT_ANY))
 server_sock.listen(1)
 
 port = server_sock.getsockname()[1]
 
-
-#uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
 uuid = "a1a738e0-c3b3-11e3-9c1a-0800200c9a66"
 
-advertise_service( server_sock, "RewaveServer",
+advertise_service(server_sock, "RewaveServer",
                    service_id = uuid,
                    service_classes = [ uuid, SERIAL_PORT_CLASS ],
-                   profiles = [ SERIAL_PORT_PROFILE ], 
-#                   protocols = [ OBEX_UUID ] 
-                    )
+                   profiles = [ SERIAL_PORT_PROFILE ],  
+                )
 
-test_case = []
-max_template_length = 40
+def match(test_case, template):
+    return True
 
-
-def get_max_template_length():
-    pass
 
 while True:
     print("Waiting for connection on RFCOMM channel %d" % port)
@@ -44,12 +41,14 @@ while True:
             data = client_sock.recv(2048).decode(encoding='UTF-8')
             log.debug(data)
             
-            if (len(test_case) > 40):
+            if (len(test_case) > test_case.max_size):
                 del(test_case[0])
-            test_case.append(data.split(","))
+            test_case.put(data.split(","))
             
-
-
+            for template in templates:
+                if match(test_case, template):
+                    template.execute()
+            
             if data == "quit":
                 break
             time.sleep(0.0006)

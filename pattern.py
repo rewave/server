@@ -1,13 +1,18 @@
 #!/usr/bin/python
 import csv
+from pykeyboard import PyKeyboard
 
 class Pattern(object):
-	def __init__(self, template_name=None, stream=False, max_size = 40):
+	def __init__(self, template_name=None, stream=False, max_size = 40, key=None):
 		self.template_name = template_name
 		self.pattern_matrix = []
-
+		
 		if not stream:
-			with open("templates/"+template_name, "rb") as csv_file:
+			#only templates will have their keyboard objects
+			self.k = PyKeyboard()
+			self.keycode = k.lookup_character_keycode(key)
+
+			with open("templates/"+template_name+".txt", "rb") as csv_file:
 				reader = csv.reader(csv_file)
 				for row in reader:
 					self.pattern_matrix.append(row)
@@ -23,6 +28,9 @@ class Pattern(object):
 		#delete 0th term and append the latest 
 		del(self.pattern_matrix[0])
 		self.pattern_matrix.append(acceleration_instance)
+
+	def execute(self):
+		self.k.tap_key(self.keycode)
 
 def main():
 	letter_s = Pattern("letter_s.txt")
