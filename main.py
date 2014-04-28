@@ -14,7 +14,6 @@ test_case = Pattern(stream=True) #stream of incoming data
 templates = [Pattern(template_name="left_wave", key_code=k.left_key)]#, Pattern("right_wave", "Right"), Pattern("flick_up", "Up")]
 
 
-
 server_sock=BluetoothSocket(RFCOMM)
 server_sock.bind(("",PORT_ANY))
 server_sock.listen(1)
