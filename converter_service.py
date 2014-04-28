@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from database import Pattern, MotionLog
-from pattern import Pattern as CsvPattern
+from pattern_holder import PatternHolder as CsvPattern
 from pykeyboard import PyKeyboard
 
 k = PyKeyboard()
