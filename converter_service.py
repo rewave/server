@@ -32,9 +32,27 @@ def main():
 
 	for csv_pattern in patterns_to_load:
 		current = p.create(name=csv_pattern.template_name, key_code=csv_pattern.key_code)
-		print "creating " + csv_pattern.template_name
+		print """
+			$p = new Pattern; 
+			$p.name='%s';
+			$p.key_code'='%s';
+			$p.save();
+			"""%(csv_pattern.template_name, csv_pattern.key_code)
 		for row in csv_pattern.get(): #we have the matrix here
-			print "\t creating motion log point"
+			'''
+			print """
+			MotionLog.create(array(
+				'pattern_id'=>'%s',
+				'timestamp'=>'%s',
+				'ax'=>'%s',
+				'ay'=>'%s',
+				'az'=>'%s',
+				'gx'=>'%s',
+				'gy'=>'%s',
+				'gz'=>'%s',
+			));	
+			"""%(current.id, row[0], row[1], row[2], row[3], row[4], row[5], row[6])
+			'''
 			m.create(pattern=current, timestamp=row[0], ax=row[1], ay=row[2], az=row[3], gx=row[4], gy=row[5], gz=row[6])
 
 if __name__ == '__main__':

@@ -1,10 +1,11 @@
 #!/usr/bin/python
+
 from database import Pattern, MotionLog
 
 class PatternHolder(object):
 	def __init__(self, template_name=None, stream=False, max_size = 40, key_code=None):
 		self.template_name 	= template_name
-		self.pattern_matrix = []
+	`	self.pattern_matrix = []
 		self.key_code 		= key_code
 		self.stream 		= stream
 		self.max_size 		= max_size
@@ -27,11 +28,11 @@ class PatternHolder(object):
 	def put(self, acceleration_instance):
 		#delete 0th term and append the latest
                 if len(self.pattern_matrix) >0:
-                        del(self.pattern_matrix[0])
+                    del(self.pattern_matrix[0])
                 try:
-                        self.pattern_matrix.append([float(i) for i in acceleration_instance])
+                    self.pattern_matrix.append([float(i) for i in acceleration_instance])
                 except ValueError, e:
-                        pass
+                    pass
 
 	def truncate(self):
                 self.pattern_matrix = []
@@ -43,7 +44,6 @@ def main():
 
 	stream = PatternHolder(stream=True)
 	print stream.get()
-
 	
 if __name__ == '__main__':
 	main()

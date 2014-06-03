@@ -21,7 +21,7 @@ if __name__ == '__main__':
 		try:
 			data = struct.unpack('ffffff', data[4:28])#ax,ay,az,wx,wy,wz
 			length = (float(data[0])**2 + float(data[1])**2)**0.5
-			if length >= 1.5:
+			if length >= 1.2:
 				#log.info("Data received is %s"%str(data))
 				motion_log.append([data[0], data[1]])
 			else:
