@@ -9,8 +9,6 @@ log = Logger('main.py', level=0)
 
 k = PyKeyboard()
 
-
-
 def create_server():
 	server_socket=BluetoothSocket(RFCOMM)
 	server_socket.bind(("",PORT_ANY))
