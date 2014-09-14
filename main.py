@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 
-from bluetooth import BluetoothSocket, RFCOMM, PORT_ANY, SERIAL_PORT_CLASS, SERIAL_PORT_PROFILE
+from bluetooth import BluetoothSocket, RFCOMM, PORT_ANY, SERIAL_PORT_CLASS, SERIAL_PORT_PROFILE, advertise_service
+from time import sleep
 
 config = {
     'backlog': 5,  # max unsuccesful connect attempts
@@ -14,7 +15,7 @@ class BtServer(object):
         super(BtServer, self).__init__()
 
         socket = BluetoothSocket(RFCOMM)
-        socket.bind(PORT_ANY)
+        socket.bind(("", PORT_ANY)) # empty host address means this machine
         socket.listen(config['backlog'])
 
         bound_port = socket.getsockname()[1]
@@ -28,7 +29,7 @@ class BtServer(object):
             profiles=[SERIAL_PORT_PROFILE]
         )
 
-        self.socket = server_sock
+        self.socket = socket
         self.port = bound_port
 
         self.client = {}
@@ -45,19 +46,19 @@ def main():
     S = BtServer()
 
     print('Waiting for connection on RFCOMM channel %d' % S.port)
-    s.client['socket'], s.client['info'] = S.socket.accept()
-    print("Accepted connection from ", s.client['info'])
+    S.client['socket'], S.client['info'] = S.socket.accept()
+    print("Accepted connection from ", S.client['info'])
 
     while True:
         try:
-            data = s.client['socket'].recv(2048).decode(encoding='UTF-8')
-            log.debug(data)
-            if data == "quit":
+            data = S.client['socket'].recv(2048).decode(encoding='UTF-8')
+
+            if data == "exit":
                 S.close_connection()
                 break
 
             print(data)
-            time.sleep(0.0006)
+            sleep(0.0006)
         
         except IOError:
             pass
