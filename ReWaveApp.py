@@ -44,8 +44,10 @@ def Func():
         if Current_Signal != New_Signal:
 	    #Read The Input Signal
             if New_Signal==Right:
+                pass
 		#What To Do In Case Right
             elif New_Signal==Left:
+                pass
                 #Left
             Current_Signal=New_Signal
 

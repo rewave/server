@@ -5,7 +5,7 @@ from database import Pattern, MotionLog
 class PatternHolder(object):
 	def __init__(self, template_name=None, stream=False, max_size = 40, key_code=None):
 		self.template_name 	= template_name
-	`	self.pattern_matrix = []
+		self.pattern_matrix = []
 		self.key_code 		= key_code
 		self.stream 		= stream
 		self.max_size 		= max_size
