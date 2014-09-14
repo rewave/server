@@ -52,3 +52,7 @@ docs/_build/
 # Sqlite dbs
 *.sqlite
 *.db
+
+# Nuitka Builds
+*.build/
+*.exe
