@@ -1,0 +1,2 @@
+PyBluez==0.20
+PyUserInput==0.1.9
