@@ -11,6 +11,12 @@ config = {
 
 k = PyKeyboard()
 
+key_bindings = {
+    'left' : k.left_key, 
+    'right' : k.right_key,
+    'up' : k.up_key,
+    'down' : k.down_key
+}
 
 class BtServer(object):
 
@@ -61,11 +67,10 @@ def main():
                 S.close_connection()
                 break
 
-            if len(data) > 0:
-                try:
-                    k.tap_key(k.lookup_character_keycode(data))
-                except KeyError:
-                    pass
+            try:
+                k.tap_key(key_bindings[data])
+            except KeyError:
+                pass
 
             print(data)
             sleep(0.0006)
